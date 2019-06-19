@@ -1,0 +1,48 @@
+using System;
+using System.Net;
+using System.Net.Mail;
+
+namespace MailSender
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                var recipient = args[0];
+                string subject = "";
+                string body = "";
+                int nextStart = 0;
+
+                for (int i = 1; i < args.Length; i++)
+                {
+                    if (args[i] == "end_of_subject")
+                    {
+                        nextStart = i + 1;
+                        break;
+                    }
+                    subject += args[i] + " ";
+                }
+                for (int i = nextStart; i < args.Length; i++)
+                {
+                    body += args[i] + " ";
+                }
+
+                SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+                client.EnableSsl = true;
+                client.Timeout = 10000;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential("globalmail91@gmail.com", "********");
+                MailMessage message = new MailMessage();
+                message.To.Add(recipient);
+                message.From = new MailAddress("globalmail91@gmail.com");
+                message.Subject = subject;
+                message.Body = body;
+                client.Send(message);
+            }
+            catch (Exception) { }
+        }
+    }
+}

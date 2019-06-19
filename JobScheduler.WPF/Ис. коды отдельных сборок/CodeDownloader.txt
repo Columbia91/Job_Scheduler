@@ -1,0 +1,28 @@
+using System;
+using System.Net;
+using System.Net.Mime;
+
+namespace Downloader
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    string url = args[0];
+                    client.OpenRead(url);
+
+                    string header_contentDisposition = client.ResponseHeaders["content-disposition"];
+                    string fileName = new ContentDisposition(header_contentDisposition).FileName;
+
+                    string path = args[1] + '\\' + fileName;
+                    client.DownloadFileAsync(new System.Uri(url), path);
+                }
+            }
+            catch (Exception) {}
+        }
+    }
+}
